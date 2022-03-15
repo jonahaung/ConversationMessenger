@@ -78,7 +78,7 @@
 		477292EA27BDFCD9005960AA /* MediaUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477292E927BDFCD9005960AA /* MediaUploader.swift */; };
 		477292EC27BDFD05005960AA /* MediaQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477292EB27BDFD05005960AA /* MediaQueue.swift */; };
 		477292EE27BE12AF005960AA /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477292ED27BE12AF005960AA /* Media.swift */; };
-		477292F727BE5A71005960AA /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 477292F627BE5A71005960AA /* Introspect */; };
+		477DA6DD27E0967600C143C4 /* Introspection in Frameworks */ = {isa = PBXBuildFile; productRef = 477DA6DC27E0967600C143C4 /* Introspection */; };
 		4789ED9C27CCA73500148647 /* ReplyFeedbackGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4789ED9B27CCA73500148647 /* ReplyFeedbackGenerator.swift */; };
 		4789ED9E27CCFD5C00148647 /* +UIScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4789ED9D27CCFD5C00148647 /* +UIScrollView.swift */; };
 		4789EDA027CD016100148647 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4789ED9F27CD016100148647 /* Coordinator.swift */; };
@@ -272,8 +272,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				477DA6DD27E0967600C143C4 /* Introspection in Frameworks */,
 				47A4E4C727B944CD00E9AC7F /* UI in Frameworks */,
-				477292F727BE5A71005960AA /* Introspect in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -841,7 +841,7 @@
 			name = Conversation;
 			packageProductDependencies = (
 				47A4E4C627B944CD00E9AC7F /* UI */,
-				477292F627BE5A71005960AA /* Introspect */,
+				477DA6DC27E0967600C143C4 /* Introspection */,
 			);
 			productName = Conversation;
 			productReference = 47CDB87627A5EE92002F2BDF /* Conversation.app */;
@@ -873,7 +873,7 @@
 			mainGroup = 47CDB86D27A5EE92002F2BDF;
 			packageReferences = (
 				47A4E4C527B944CD00E9AC7F /* XCRemoteSwiftPackageReference "UI" */,
-				477292F527BE5A71005960AA /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				477DA6DB27E0967600C143C4 /* XCRemoteSwiftPackageReference "Introspection" */,
 			);
 			productRefGroup = 47CDB87727A5EE92002F2BDF /* Products */;
 			projectDirPath = "";
@@ -1236,12 +1236,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		477292F527BE5A71005960AA /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+		477DA6DB27E0967600C143C4 /* XCRemoteSwiftPackageReference "Introspection" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
+			repositoryURL = "https://github.com/jonahaung/Introspection";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.4;
+				branch = main;
+				kind = branch;
 			};
 		};
 		47A4E4C527B944CD00E9AC7F /* XCRemoteSwiftPackageReference "UI" */ = {
@@ -1255,10 +1255,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		477292F627BE5A71005960AA /* Introspect */ = {
+		477DA6DC27E0967600C143C4 /* Introspection */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 477292F527BE5A71005960AA /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
-			productName = Introspect;
+			package = 477DA6DB27E0967600C143C4 /* XCRemoteSwiftPackageReference "Introspection" */;
+			productName = Introspection;
 		};
 		47A4E4C627B944CD00E9AC7F /* UI */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -11,7 +11,7 @@ extension Date {
     
     func getDifference(from start: Date, unit component: Calendar.Component) -> Int  {
         let dateComponents = Calendar.current.dateComponents([component], from: start, to: self)
-        return dateComponents.second ?? 0
+        return dateComponents.value(for: component) ?? 0
     }
 }
 

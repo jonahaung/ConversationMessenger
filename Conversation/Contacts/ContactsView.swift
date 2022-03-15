@@ -19,6 +19,14 @@ struct ContactsView: View {
             }
             .onDelete(perform: manager.delete(at:))
         }
+        .refreshable {
+            
+        }
+        .toolbar{
+            ToolbarItem(placement: .navigation) {
+                EditButton()
+            }
+        }
         .navigationTitle("Contacts")
         .task {
             manager.task()

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Introspect
+import Introspection
 
 struct ChatView: View {
     
@@ -94,6 +94,7 @@ struct ChatView: View {
         .environmentObject(viewComponents)
         .environmentObject(datasource)
         .environmentObject(conversation)
+        
     }
 }
 
@@ -133,7 +134,7 @@ extension ChatView {
     }
     
     func canShowTimeSeparater(_ date: Date, _ previousDate: Date) -> Bool {
-        date.getDifference(from: previousDate, unit: .second) > 30
+        date.getDifference(from: previousDate, unit: .hour) > 1
     }
     
     func msgStyle(for this: Msg, at index: Int) -> MsgStyle {
@@ -176,7 +177,7 @@ extension ChatView {
                      this.msgType != rhs.msgType ||
                      thisIsSelectedId ||
                      rhs.id == selectedId ||
-                     self.canShowTimeSeparater(this.date, rhs.date)) {
+                     self.canShowTimeSeparater(rhs.date, this.date)) {
                     rectCornors.formUnion(.bottomRight)
                 }
             }else {

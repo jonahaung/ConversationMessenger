@@ -17,22 +17,23 @@ struct TapToPresentStyle<Destination: View>: ViewModifier {
     @Environment(\.presentationMode) private var presentationMode
     
     func body(content: Content) -> some View {
-        content
-            .onTapGesture {
-                if isFullScreen {
-                    fullScreenIsPresented = true
-                } else {
-                    sheetIsPresented = true
-                }
+        Button {
+            if isFullScreen {
+                fullScreenIsPresented = true
+            } else {
+                sheetIsPresented = true
             }
-            .fullScreenCover(isPresented: $fullScreenIsPresented) {
-                destination
-            }
-            .sheet(isPresented: $sheetIsPresented) {
-                destination
-            }
+        } label: {
+            content
+        }
+        .fullScreenCover(isPresented: $fullScreenIsPresented) {
+            destination
+        }
+        .sheet(isPresented: $sheetIsPresented) {
+            destination
+        }
     }
-
+    
 }
 
 

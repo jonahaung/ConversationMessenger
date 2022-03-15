@@ -14,20 +14,28 @@ struct InBoxView: View {
     var body: some View {
         VStack {
             List {
-                ForEach(manager.conversations) {
-                    InBoxCell().environmentObject($0)
+                Section {
+                    ForEach(manager.conversations) {
+                        InBoxCell().environmentObject($0)
+                    }
+                    .onDelete(perform: delete(at:))
                 }
-                .onDelete(perform: delete(at:))
+                .listRowSeparator(.hidden)
             }
+            .searchable(text: .constant(""))
             .listStyle(.plain)
             .refreshable{
                 manager.refresh()
             }
             bottomBar
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                EditButton()
+            }
+        }
         .navigationTitle("Inbox")
-        .navigationBarItems(trailing: EditButton())
-        .onAppear {
+        .task {
             manager.task()
         }
     }
