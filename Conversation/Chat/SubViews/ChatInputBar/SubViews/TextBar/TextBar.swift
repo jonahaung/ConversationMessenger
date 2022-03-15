@@ -11,6 +11,7 @@ struct TextBar: View, TextMsgSendable, EmojiMsgSendable {
     
     @EnvironmentObject internal var inputManager: ChatInputViewManager
     @EnvironmentObject internal var coordinator: Coordinator
+    @EnvironmentObject internal var conversation: Conversation
     
     var body: some View {
         HStack(alignment: .bottom) {

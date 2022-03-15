@@ -12,10 +12,10 @@ struct TypingView: View {
     private let timer = Timer.publish(every: 0.3, on: .main, in: .common).autoconnect()
     @State private var offset = CGFloat(0)
     @State private var scale = 1.0
-    @EnvironmentObject internal var coordinator: Coordinator
+    @EnvironmentObject private var conversation: Conversation
     
     var body: some View {
-        AvatarView(id: coordinator.conversation.id)
+        AvatarView(id: conversation.id)
             .frame(width: 17 * scale, height: 17 * scale)
             .padding(3)
             .offset(y: offset)

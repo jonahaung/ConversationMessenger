@@ -15,7 +15,7 @@ protocol LocationMsgSendable: MsgSendable {
 extension LocationMsgSendable {
     func sendLocation(coordinate: CLLocationCoordinate2D) {
         resetView()
-        let msg = Msg(conId: coordinator.conversation.id, msgType: .Location, rType: .Send, progress: .Sending)
+        let msg = Msg(conId: conversation.id, msgType: .Location, rType: .Send, progress: .Sending)
         msg.locationData = .init(latitude: coordinate.latitude, longitude: coordinate.longitude)
         send(msg: msg)
     }

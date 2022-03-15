@@ -11,14 +11,14 @@ import MapKit
 struct LocationBubble: View {
     
     @EnvironmentObject internal var msg: Msg
-    @EnvironmentObject internal var coordinator: Coordinator
+    @EnvironmentObject private var conversation: Conversation
     
     var body: some View {
         Group {
             if let data = msg.locationData, let image = data.image {
                 Image(uiImage: image)
                     .resizable()
-                    .cornerRadius(coordinator.conversation.cellSpacing)
+                    .cornerRadius(conversation.cellSpacing)
                     .tapToPresent(LocationViewer(coordinate: CLLocationCoordinate2D(latitude: data.latitude, longitude: data.longitude)))
             }else {
                 ProgressView()
@@ -26,6 +26,6 @@ struct LocationBubble: View {
                         LocationLoader.loadMedia(msg)
                     }
             }
-        }.frame(size: ChatKit.locationBubbleSize)
+        }.frame(size: ChatKit.ChatCell.LocationBubble.size)
     }
 }

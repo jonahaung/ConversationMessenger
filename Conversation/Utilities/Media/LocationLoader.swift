@@ -19,7 +19,7 @@ class LocationLoader: NSObject {
         let region: MKCoordinateRegion = MKCoordinateRegion(center: .init(latitude: data.latitude, longitude: data.longitude), latitudinalMeters: CLLocationDegrees(0.01), longitudinalMeters: CLLocationDegrees(0.01))
 		let options = MKMapSnapshotter.Options()
 		options.region = region
-        options.size = ChatKit.locationBubbleSize
+        options.size = ChatKit.ChatCell.LocationBubble.size
 		options.scale = UIScreen.main.scale
         MKMapSnapshotter(options: options).start(with: DispatchQueue.global(qos: .default), completionHandler: { [weak msg] snapshot, error in
             guard let msg = msg else  { return }

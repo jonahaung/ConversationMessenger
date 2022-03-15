@@ -10,42 +10,45 @@ import SwiftUI
 struct ChatTopBar: View {
     static let id = 2
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var coordinator: Coordinator
+    @EnvironmentObject private var conversation: Conversation
     
     var body: some View {
-        HStack {
-            Button {
-                coordinator.conversation.refresh()
-                presentationMode.wrappedValue.dismiss()
-            } label: {
-                Image(systemName: "chevron.backward")
-                    .imageScale(.large)
-                    .padding()
-            }
+        VStack(spacing: 0) {
             HStack {
-                AvatarView(id: coordinator.conversation.id)
-                    .frame(width: 35, height: 35)
-                    .padding(2)
-                    .background(Color.teal)
-                    .clipShape(Circle())
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(coordinator.conversation.name)
-                        .font(.system(size: UIFont.systemFontSize, weight: .bold))
-                    Text(Date(), formatter: MsgDateView.dateFormatter)
-                        .font(.system(size: UIFont.smallSystemFontSize, weight: .medium))
-                        .foregroundColor(.secondary)
+                Button {
+                    conversation.refresh()
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image(systemName: "chevron.backward")
+                        .imageScale(.large)
+                        .padding()
                 }
+                HStack {
+                    AvatarView(id: conversation.id)
+                        .frame(width: 35, height: 35)
+                        .padding(2)
+                        .background(Color.teal)
+                        .clipShape(Circle())
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(conversation.name)
+                            .font(.system(size: UIFont.systemFontSize, weight: .bold))
+                        Text(Date(), formatter: MsgDateView.dateFormatter)
+                            .font(.system(size: UIFont.smallSystemFontSize, weight: .medium))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                Button {
+                    randonMsgs()
+                } label: {
+                    Image(systemName: "circle.fill")
+                }
+                Image(systemName: "ellipsis")
+                    .padding()
+                    .tapToPush(ConSettingsView().environmentObject(conversation))
             }
-            
-            Spacer()
-            Button {
-                randonMsgs()
-            } label: {
-                Image(systemName: "circle.fill")
-            }
-            Image(systemName: "ellipsis")
-                .padding()
-                .tapToPush(ConSettingsView().environmentObject(coordinator))
+            Divider()
         }
         .background(.regularMaterial)
         .saveBounds(viewId: ChatTopBar.id, coordinateSpace: .named("ChatView"))

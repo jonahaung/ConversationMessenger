@@ -18,7 +18,7 @@ struct ImageBubble: View {
                 Image(uiImage: image)
                     .resizable()
                     .cornerRadius(8)
-                    .tapToPresent(ImageViewer(image: image))
+//                    .tapToPresent(ImageViewer(image: image))
             } else {
                 VStack {
                     ProgressView("\(msg.mediaStatus.rawValue)")

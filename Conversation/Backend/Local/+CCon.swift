@@ -20,16 +20,7 @@ extension CCon {
         return cCon
     }
     
-    class func fetchOrCreate(contact: CContact) -> CCon {
-        let conId = contact.conId
-        if let cCon = cCon(for: conId) {
-            return cCon
-        }
-        let cCon = create(id: conId)
-        cCon.name = contact.name
-        
-        return cCon
-    }
+
     @discardableResult
     class func create(id: String) -> CCon {
         let context = Persistence.shared.context

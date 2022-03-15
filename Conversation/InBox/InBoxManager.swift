@@ -9,26 +9,14 @@ import Foundation
 import SwiftUI
 
 class InBoxManager: ObservableObject {
-    @Published var conversations: LazyList<Conversation>
-    private var hasLoaded = false
-    init() {
-        let cCons = CCon.cons()
-        conversations = .init(count: cCons.count, useCache: false) { Conversation(cCon: cCons[$0]) }
-    }
+    
+    @Published var conversations = [Conversation]()
     
     func task() {
-        if hasLoaded {
-            withAnimation(.interactiveSpring()) {
-                objectWillChange.send()
-            }
-        } else {
-            hasLoaded = true
-        }
-        
+        conversations = CCon.cons().map(Conversation.init).sorted{ $0.lastMsg()?.date ?? Date() > $1.lastMsg()?.date ?? Date() }
     }
     
     func refresh() {
-        objectWillChange.send()
-//        self.cons = CCon.cons().map(Conversation.init)
+        conversations = CCon.cons().map(Conversation.init)
     }
 }

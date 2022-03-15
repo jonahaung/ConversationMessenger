@@ -15,7 +15,7 @@ protocol TextMsgSendable: MsgSendable {
 extension TextMsgSendable {
 
     func sendText(text: String) {
-        let msg = Msg(conId: coordinator.conversation.id, msgType: .Text, rType: .Send, progress: .Sending)
+        let msg = Msg(conId: conversation.id, msgType: .Text, rType: .Send, progress: .Sending)
         msg.textData = .init(text: text)
         send(msg: msg)
     }
@@ -27,7 +27,7 @@ protocol EmojiMsgSendable: MsgSendable {
 
 extension EmojiMsgSendable {
     func sendEmoji(name: String = "hand.thumbsup.fill") {
-        let msg = Msg(conId: coordinator.conversation.id, msgType: .Emoji, rType: .Send, progress: .Sending)
+        let msg = Msg(conId: conversation.id, msgType: .Emoji, rType: .Send, progress: .Sending)
         let random = CGFloat.random(in: 30..<150)
         msg.emojiData = .init(emojiID: name, size: .init(size: random))
         send(msg: msg)

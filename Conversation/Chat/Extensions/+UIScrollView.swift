@@ -25,16 +25,14 @@ extension UIScrollView {
     }
     
     func scrollToBottom(animated: Bool) {
-        guard !isDragging else { return }
-        if isDragging || isDecelerating {
-            setContentOffset(contentOffset, animated: false)
-        }
+        
         var offset = contentOffset
         offset.y = self.contentSize.height
         if animated {
-            UIView.animate(withDuration: 0.2) {
+            UIView.animateKeyframes(withDuration: 0.18, delay: 0.1, options: [.beginFromCurrentState, .overrideInheritedOptions]) {
                 self.contentOffset = offset
             }
+
         } else {
             self.contentOffset = offset
         }

@@ -10,20 +10,21 @@ import SwiftUI
 struct ChatCell: View {
     
     @EnvironmentObject internal var msg: Msg
+    @EnvironmentObject internal var conversation: Conversation
+    @EnvironmentObject internal var viewComponents: ViewComponents
     let style: MsgStyle
-    @EnvironmentObject internal var coordinator: Coordinator
     
     fileprivate func leftView() -> some View {
         Group {
             if msg.rType == .Send {
-                Spacer(minLength: ChatKit.cellAlignmentSpacing)
+                Spacer(minLength: ChatKit.ChatCell.flexiableSpacing)
             } else {
                 VStack {
                     if style.showAvatar {
-                        AvatarView(id: coordinator.conversation.id)
+                        AvatarView(id: conversation.id)
                     }
                 }
-                .frame(width: ChatKit.cellLeftRightViewWidth)
+                .frame(width: ChatKit.ChatCell.statusViewSize)
             }
         }
     }
@@ -31,17 +32,17 @@ struct ChatCell: View {
     fileprivate func rightView() -> some View {
         Group {
             if msg.rType == .Receive {
-                Spacer(minLength: ChatKit.cellAlignmentSpacing)
+                Spacer(minLength: ChatKit.ChatCell.flexiableSpacing)
                 
             } else {
                 VStack {
                     if style.showAvatar {
-                        AvatarView(id: coordinator.conversation.id)
+                        AvatarView(id: conversation.id)
                     }else {
                         CellProgressView(progress: msg.deliveryStatus)
                     }
                 }
-                .frame(width: ChatKit.cellLeftRightViewWidth)
+                .frame(width: ChatKit.ChatCell.statusViewSize)
             }
         }
     }
@@ -52,7 +53,7 @@ struct ChatCell: View {
                 TimeSeparaterCell(date: msg.date)
             }
             if style.showTopPadding {
-                Color.clear.frame(height: 15)
+                Spacer(minLength: 10)
             }
             HStack(alignment: .bottom, spacing: 2) {
                 leftView()
@@ -63,7 +64,7 @@ struct ChatCell: View {
                     }
                     
                     Group {
-                        if coordinator.conversation.isBubbleDraggable {
+                        if style.isSelected {
                             bubbleView()
                                 .modifier(DraggableModifier(direction: .horizontal))
                         } else {
@@ -78,6 +79,7 @@ struct ChatCell: View {
                 rightView()
             }
         }
+        .transition(.move(edge: .bottom))
         .id(msg.id)
     }
 }

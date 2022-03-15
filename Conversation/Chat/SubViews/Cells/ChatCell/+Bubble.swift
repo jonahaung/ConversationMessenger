@@ -13,9 +13,7 @@ extension ChatCell {
         Group {
             switch msg.msgType {
             case .Text:
-                TextBubble()
-                    .foregroundColor( msg.rType == .Send ? ChatKit.textTextColorOutgoing : nil)
-                    .background(style.bubbleShape!.fill(coordinator.conversation.bubbleColor(for: msg)))
+                TextBubble(style: style)
             case .Image:
                 ImageBubble()
             case .Location:
@@ -32,7 +30,7 @@ extension ChatCell {
         .onTapGesture {
             ToneManager.shared.vibrate(vibration: .rigid)
             withAnimation(.interactiveSpring()) {
-                coordinator.viewComponents.selectedId = msg.id == coordinator.viewComponents.selectedId ? nil : msg.id
+                viewComponents.selectedId = msg.id == viewComponents.selectedId ? nil : msg.id
             }
         }
     }

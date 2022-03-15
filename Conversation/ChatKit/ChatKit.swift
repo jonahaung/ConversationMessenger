@@ -10,15 +10,22 @@ import SwiftUI
 
 enum ChatKit {
 
-    static let cellAlignmentSpacing = CGFloat(30)
-    static let cellMsgStatusSize = CGFloat(15)
-    static let cellHorizontalPadding = CGFloat(8)
-    static let textBubbleColorIncoming = Color(uiColor: .secondarySystemGroupedBackground)
-    static let textBubbleColorIncomingPlain = Color(uiColor: .systemGray6)
-    static let cellLeftRightViewWidth = 15.00
-    static let locationBubbleSize = CGSize(width: 280, height: 200)
+    enum ChatCell {
+        static let flexiableSpacing = CGFloat(30)
+        static let statusViewSize = CGFloat(15)
+        enum TextBubble {
+            static let insets = CGSize(width: 12, height: 6)
+            static let bgColorIncoming = Color(uiColor: .secondarySystemGroupedBackground)
+            static let bgColorIncomingDefault = Color(uiColor: .systemGray6)
+            static let textColorOutgoing = Color(uiColor: UIColor.systemBackground)
+            static let textColorIncoming: Color? = nil
+        }
+        enum LocationBubble {
+            static let size = CGSize(width: 280, height: 200)
+        }
+    }
+
     
     static let mediaMaxWidth = CGFloat(250)
-    static let textTextColorOutgoing = Color(uiColor: UIColor.systemBackground)
-    static let textTextColorIncoming: Color? = nil
+    
 }

@@ -40,15 +40,17 @@ struct InputTextView: UIViewRepresentable {
         }
         
         func growingTextViewShouldBeginEditing(_ growingTextView: GrowingTextView) -> Bool {
-            return parent.coordinator.layout.inputTextView(willUpdateFirstResponder: true)
+            return parent.coordinator.inputTextView(willUpdateFirstResponder: true)
         }
         func growingTextViewShouldEndEditing(_ growingTextView: GrowingTextView) -> Bool {
-            return parent.coordinator.layout.inputTextView(willUpdateFirstResponder: false)
+            return parent.coordinator.inputTextView(willUpdateFirstResponder: false)
         }
         
         func growingTextView(_ growingTextView: GrowingTextView, willChangeHeight height: CGFloat, difference: CGFloat) {
+            parent.coordinator.inputTextView(textView: parent, didChangeTextViewHeight: difference)
+        }
+        func growingTextView(_ growingTextView: GrowingTextView, didChangeHeight height: CGFloat, difference: CGFloat) {
             parent.inputManager.textViewHeight = height
-            parent.coordinator.layout.inputTextView(textView: parent, didChangeTextViewHeight: difference)
         }
     }
 }

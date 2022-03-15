@@ -30,7 +30,6 @@ class ContactManager: ObservableObject {
     func delete(at offsets: IndexSet) {
         if let first = offsets.first {
             let con =  displayContacts[first]
-//            CContact.delete(cContact: con)
             contacts.remove(atOffsets: offsets)
             objectWillChange.send()
         }
@@ -50,7 +49,6 @@ class ContactManager: ObservableObject {
         let keysToFetch = [
             CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
             CNContactPhoneNumbersKey,
-            CNContactEmailAddressesKey,
             CNContactThumbnailImageDataKey] as [Any]
         
         var allContainers: [CNContainer] = []

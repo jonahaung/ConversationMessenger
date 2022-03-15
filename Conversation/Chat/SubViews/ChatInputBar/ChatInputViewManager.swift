@@ -10,16 +10,16 @@ import SwiftUI
 
 class ChatInputViewManager: ObservableObject {
     
-    @MainActor var text = String() {
+    var text = String() {
         willSet {
             guard newValue.isEmpty || text.isEmpty else { return }
             objectWillChange.send()
         }
     }
     
-    @MainActor var hasText: Bool { !text.isEmpty }
+    var hasText: Bool { !text.isEmpty }
     @Published var textViewHeight = CGFloat.zero
-    @Published var isTyping = false
+   
     @Published var currentInputItem = InputMenuBar.Item.Text
 
     deinit {

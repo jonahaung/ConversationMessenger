@@ -10,11 +10,19 @@ import Introspect
 
 struct ChatView: View {
     
-    @StateObject internal var inputManager = ChatInputViewManager()
-    @StateObject internal var coordinator: Coordinator
+    @StateObject var conversation: Conversation
+    @StateObject internal var coordinator: Coordinator = Coordinator()
+    @StateObject private var viewComponents: ViewComponents
+    @StateObject private var datasource: ChatDatasource
+    @StateObject private var accessoryBarManager = AccessoryBar.Manager()
     
     init(_ conversation: Conversation) {
-        _coordinator = .init(wrappedValue: .init(conversation))
+        let vComponents = ViewComponents()
+        let dSource = ChatDatasource(conId: conversation.id)
+        _conversation = .init(wrappedValue: conversation)
+        _viewComponents = .init(wrappedValue: vComponents)
+        _datasource = .init(wrappedValue: dSource)
+        
     }
     
     init(_ contact: PhoneContact) {
@@ -24,47 +32,56 @@ struct ChatView: View {
     var body: some View {
         ZStack {
             ChatScrollView {
-                LazyVStack(spacing: coordinator.conversation.cellSpacing) {
-                    HStack {
-                        if coordinator.datasource.hasMorePrevious {
+                LazyVStack(spacing: conversation.cellSpacing) {
+                    VStack {
+                        if datasource.hasMorePrevious {
                             ProgressView()
                         }
                     }
-                    .frame(height: coordinator.viewComponents.topBarRect.height)
+                    .frame(height: viewComponents.topBarRect.height)
                     
-                    ForEach(Array(coordinator.datasource.msgs.enumerated()), id: \.offset) { index, msg in
-                        ChatCell(style: coordinator.msgStyle(for: msg, at: index))
+                    ForEach(Array(datasource.msgs.enumerated()), id: \.offset) { index, msg in
+                        ChatCell(style: msgStyle(for: msg, at: index))
                             .environmentObject(msg)
                     }
                     
-                    HStack {
-                        if coordinator.datasource.hasMoreNext {
+                    VStack {
+                        if datasource.hasMoreNext {
                             ProgressView()
                         }
                     }
-                    .frame(height: coordinator.viewComponents.bottomBarRect.height)
+                    .frame(height: viewComponents.bottomBarRect.height)
                     .id(0)
                 }
-                .padding(.horizontal, ChatKit.cellHorizontalPadding)
+                .padding(.horizontal, 8)
             }
-            .introspectScrollView {
-                coordinator.layout.connect(scrollView: $0)
+            .introspectScrollView { scrollView in
+                if coordinator.start(scrollView: scrollView) {
+                    scrollView.keyboardDismissMode = .none
+                    scrollView.contentInsetAdjustmentBehavior = .never
+                    viewComponents.scrollView = scrollView
+                    viewComponents.contentInsets = scrollView.contentInset
+                }
             }
-            .coordinateSpace(name: "ChatView")
             VStack(spacing: 0) {
                 ChatTopBar()
                 Spacer()
+                AccessoryBar()
+                    .environmentObject(accessoryBarManager)
                 ChatBottomBar()
-                    .environmentObject(inputManager)
             }
         }
-        .background(coordinator.conversation.bgImage.image)
-        .accentColor(coordinator.conversation.themeColor.color)
-        .retrieveBounds(viewId: ChatBottomBar.id, $coordinator.viewComponents.bottomBarRect)
-        .retrieveBounds(viewId: ChatTopBar.id, $coordinator.viewComponents.topBarRect)
-        .environmentObject(coordinator)
+        .coordinateSpace(name: "ChatView")
+        .background(conversation.bgImage.image)
+        .accentColor(conversation.themeColor.color)
+        .retrieveBounds(viewId: ChatBottomBar.id, $viewComponents.bottomBarRect)
+        .retrieveBounds(viewId: ChatTopBar.id, $viewComponents.topBarRect)
+        
         .onReceive(NotificationCenter.default.publisher(for: .MsgNoti)) { didReceiveNoti($0) }
         .task {
+            coordinator.viewComponentsDelegagte = viewComponents
+            coordinator.accessoryBarManagerDelegate = accessoryBarManager
+            coordinator.datasourceDelegate = datasource
             coordinator.task()
         }
         .onAppear {
@@ -73,15 +90,17 @@ struct ChatView: View {
         .onDisappear{
             disconnectSocket()
         }
-        
-        
+        .environmentObject(coordinator)
+        .environmentObject(viewComponents)
+        .environmentObject(datasource)
+        .environmentObject(conversation)
     }
 }
 
 extension ChatView {
     
     private func connectSocket() {
-        IncomingSocket.shard.connect(with:  coordinator.conversation)
+        IncomingSocket.shard.connect(with:  conversation)
     }
     
     private func disconnectSocket() {
@@ -95,12 +114,118 @@ extension ChatView {
             coordinator.addNewMsg(msg: msg)
             Audio.playMessageIncoming()
         case .Typing(let isTypeing):
-            inputManager.isTyping = isTypeing
+            accessoryBarManager.isTyping = isTypeing
         case .Update(let id):
-            if coordinator.conversation.refresh() {
-                coordinator.objectWillChange.send()
-            }
-            coordinator.datasource.update(id: id)
+            datasource.update(id: id)
         }
     }
+}
+
+extension ChatView {
+    func prevMsg(for msg: Msg, at i: Int) -> Msg? {
+        guard i > 0 else { return nil }
+        return datasource.msgs[i - 1]
+    }
+    
+    func nextMsg(for msg: Msg, at i: Int) -> Msg? {
+        guard i < datasource.msgs.count-1 else { return nil }
+        return datasource.msgs[i + 1]
+    }
+    
+    func canShowTimeSeparater(_ date: Date, _ previousDate: Date) -> Bool {
+        date.getDifference(from: previousDate, unit: .second) > 30
+    }
+    
+    func msgStyle(for this: Msg, at index: Int) -> MsgStyle {
+        let selectedId = viewComponents.selectedId
+        let thisIsSelectedId = this.id == selectedId
+        let isSender = this.rType == .Send
+        
+        var rectCornors: UIRectCorner = []
+        var showAvatar = false
+        var showTimeSeparater = false
+        var showTopPadding = false
+        
+        if isSender {
+            rectCornors.formUnion(.topLeft)
+            rectCornors.formUnion(.bottomLeft)
+            
+            if let lhs = prevMsg(for: this, at: index) {
+                
+                showTimeSeparater = self.canShowTimeSeparater(this.date, lhs.date)
+                
+                if
+                    (this.rType != lhs.rType ||
+                     this.msgType != lhs.msgType ||
+                     thisIsSelectedId ||
+                     lhs.id == selectedId ||
+                     showTimeSeparater) {
+                    
+                    rectCornors.formUnion(.topRight)
+                    
+                    showTopPadding = !showTimeSeparater && this.rType != lhs.rType
+                }
+            } else {
+                rectCornors.formUnion(.topRight)
+            }
+            
+            if let rhs = nextMsg(for: this, at: index) {
+                
+                if
+                    (this.rType != rhs.rType ||
+                     this.msgType != rhs.msgType ||
+                     thisIsSelectedId ||
+                     rhs.id == selectedId ||
+                     self.canShowTimeSeparater(this.date, rhs.date)) {
+                    rectCornors.formUnion(.bottomRight)
+                }
+            }else {
+                rectCornors.formUnion(.bottomRight)
+            }
+            showAvatar = this.id == conversation.lastReadMsgId
+        } else {
+            
+            rectCornors.formUnion(.topRight)
+            rectCornors.formUnion(.bottomRight)
+            
+            if let lhs = prevMsg(for: this, at: index) {
+                
+                showTimeSeparater = self.canShowTimeSeparater(this.date, lhs.date)
+                
+                if
+                    (this.rType != lhs.rType ||
+                     this.msgType != lhs.msgType ||
+                     thisIsSelectedId ||
+                     lhs.id == selectedId ||
+                     showTimeSeparater) {
+                    
+                    rectCornors.formUnion(.topLeft)
+                    
+                    showTopPadding = !showTimeSeparater && this.rType != lhs.rType
+                }
+            } else {
+                rectCornors.formUnion(.topLeft)
+            }
+            
+            if let rhs = nextMsg(for: this, at: index) {
+                if
+                    (this.rType != rhs.rType ||
+                     this.msgType != rhs.msgType ||
+                     thisIsSelectedId ||
+                     rhs.id == selectedId ||
+                     self.canShowTimeSeparater(rhs.date, this.date)) {
+                    rectCornors.formUnion(.bottomLeft)
+                    showAvatar = conversation.showAvatar
+                }
+            }else {
+                rectCornors.formUnion(.bottomLeft)
+            }
+        }
+        
+        let bubbleShape = this.msgType == .Text ? BubbleShape(corners: rectCornors, cornorRadius: conversation.bubbleCornorRadius) : nil
+        
+        let style = MsgStyle(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId)
+        return style
+    }
+    
 }

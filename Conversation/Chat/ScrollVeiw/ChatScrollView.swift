@@ -15,35 +15,40 @@ struct ScrollItem: Equatable {
 
 struct ChatScrollView<Content: View>: View {
     
+    @EnvironmentObject internal var viewComponents: ViewComponents
+
     let content: () -> Content
-    
-    @EnvironmentObject internal var coordinator: Coordinator
-    
+
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView {
                 content()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: coordinator.scrollItem) {
+            .onChange(of: viewComponents.scrollItem) {
                 if let newValue = $0 {
-                    coordinator.scrollItem = nil
+                    viewComponents.scrollItem = nil
                     scroller.scroll(to: newValue)
                 }
             }
         }
     }
+    
 }
 
 extension ScrollViewProxy {
     
     func scroll(to item: ScrollItem) {
         if item.animate {
-            withAnimation(.interactiveSpring()) {
+            withAnimation(.keyboard) {
                 scrollTo(item.id, anchor: item.anchor)
             }
         } else {
             scrollTo(item.id, anchor: item.anchor)
         }
+    }
+}
+extension Animation {
+    static var keyboard: Animation {
+        .interpolatingSpring(mass: 3, stiffness: 1000, damping: 500, initialVelocity: 0.0)
     }
 }

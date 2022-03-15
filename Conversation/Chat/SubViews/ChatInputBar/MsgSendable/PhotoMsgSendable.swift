@@ -16,7 +16,7 @@ extension PhotoMsgSendable {
     func sendPhoto(image: UIImage) {
         if let data = image.pngData() {
             resetView()
-            let msg = Msg(conId: coordinator.conversation.id, msgType: .Image, rType: .Send, progress: .Sending)
+            let msg = Msg(conId: conversation.id, msgType: .Image, rType: .Send, progress: .Sending)
             msg.imageRatio = image.size.width/image.size.height
             msg.imageData = .init(image: image)
             Media.save(photoId: msg.id, data: data)

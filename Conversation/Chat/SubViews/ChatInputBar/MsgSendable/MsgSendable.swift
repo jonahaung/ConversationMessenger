@@ -9,6 +9,7 @@ import SwiftUI
 protocol MsgSendable {
     var inputManager: ChatInputViewManager { get }
     var coordinator: Coordinator { get }
+    var conversation: Conversation { get }
 }
 
 extension MsgSendable {

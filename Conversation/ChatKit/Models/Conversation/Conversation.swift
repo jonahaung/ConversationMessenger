@@ -21,45 +21,44 @@ class Conversation: ObservableObject, Identifiable {
     var bgImage: BgImage {
         willSet {
             self.cCon()?.bgImage = newValue.rawValue
+            objectWillChange.send()
         }
     }
     var bubbleCornorRadius: CGFloat {
         willSet {
             self.cCon()?.bubbleCornorRadius = Int16(newValue)
+            objectWillChange.send()
         }
     }
     var themeColor: ThemeColor{
         willSet {
             self.cCon()?.themeColor = newValue.rawValue
+            objectWillChange.send()
         }
     }
     
     var cellSpacing: CGFloat {
         willSet {
             self.cCon()?.cellSpacing = Int16(newValue)
-        }
-    }
-    
-    var isBubbleDraggable: Bool {
-        willSet {
-            self.cCon()?.isBubbleDraggable = newValue
+            objectWillChange.send()
         }
     }
     
     var showAvatar: Bool {
         willSet {
             self.cCon()?.showAvatar = newValue
+            objectWillChange.send()
         }
     }
     
     var isPagingEnabled: Bool {
         willSet {
             self.cCon()?.isPagingEnabled = newValue
+            objectWillChange.send()
         }
     }
     
     var lastReadMsgId: String?
-//    var lastMessage: Msg?
     
     init(cCon: CCon) {
         self.id = cCon.id!
@@ -68,14 +67,11 @@ class Conversation: ObservableObject, Identifiable {
         self.bgImage = BgImage(rawValue: cCon.bgImage) ?? .None
         self.themeColor = ThemeColor(rawValue: cCon.themeColor) ?? .Blue
         self.cellSpacing = CGFloat(cCon.cellSpacing)
-        self.isBubbleDraggable = cCon.isBubbleDraggable
+        
         self.showAvatar = cCon.showAvatar
         self.isPagingEnabled = cCon.isPagingEnabled
         self.lastReadMsgId = cCon.lastReadMsgId
         self.bubbleCornorRadius = CGFloat(cCon.bubbleCornorRadius)
-//        if let cMsg = CMsg.lastMsg(for: cCon.id!) {
-//            self.lastMessage = Msg(cMsg: cMsg)
-//        }
     }
     
     func msgsCount() -> Int {
@@ -118,10 +114,7 @@ class Conversation: ObservableObject, Identifiable {
             self.cellSpacing = cellSpacing
             returnValue = true
         }
-        if self.isBubbleDraggable != cCon.isBubbleDraggable {
-            self.isBubbleDraggable = cCon.isBubbleDraggable
-            returnValue = true
-        }
+    
         if self.showAvatar != cCon.showAvatar {
             self.showAvatar = cCon.showAvatar
             returnValue = true
@@ -143,6 +136,6 @@ class Conversation: ObservableObject, Identifiable {
 
 extension Conversation {
     func bubbleColor(for msg: Msg) -> Color {
-        return msg.rType == .Send ? themeColor.color : bgImage == .None ? ChatKit.textBubbleColorIncomingPlain : ChatKit.textBubbleColorIncoming
+        return msg.rType == .Send ? themeColor.color : bgImage == .None ? ChatKit.ChatCell.TextBubble.bgColorIncomingDefault : ChatKit.ChatCell.TextBubble.bgColorIncoming
     }
 }
